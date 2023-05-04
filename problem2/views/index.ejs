@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Climate Risk Data Table</title>
+  <style>
+    /* custom CSS here */
+  </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+</head>
+<body>
+    <label for="year">Select Year:</label>
+    <select id="year" name="year" onchange="loadData()">
+      <option value="2030">2030</option>
+      <option value="2040">2040</option>
+      <option value="2050">2050</option>
+      <option value="2060">2060</option>
+      <option value="2070">2070</option>
+    </select>
+    <table id="data-table" class="display">
+      <thead>
+        <tr>
+          <th>Asset Name</th>
+          <th>Lat</th>
+          <th>Long</th>
+          <th>Business Category</th>
+          <th>Risk Rating</th>
+          <th>Risk Factors</th>
+        </tr>
+      </thead>
+    </table>
+    <script>
+      let dataTable;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        loadData();
+      });
+  
+      async function loadData() {
+        const year = document.getElementById('year').value;
+        const response = await fetch(`/data/${year}`);
+        const data = await response.json();
+        displayData(data);
+      }
+  
+      function displayData(data) {
+        if (dataTable) {
+          dataTable.destroy();
+        }
+  
+        dataTable = $('#data-table').DataTable({
+          data: data,
+          columns: [
+            { data: 'Asset Name' },
+            { data: 'Lat' },
+            { data: 'Long' },
+            { data: 'Business Category' },
+            { data: 'Risk Rating' },
+            {
+              data: 'Risk Factors',
+              render: function (data, type, row) {
+                return JSON.stringify(JSON.parse(data));
+              },
+            },
+          ],
+        });
+      }
+    </script>
+</body>
+</html>
+
